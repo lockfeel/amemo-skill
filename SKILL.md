@@ -1,8 +1,8 @@
 ---
-name: amemo-io
+name: amemo-skill
 description: >
-  amemo-io 统一调度中心。当用户需要与 amemo 服务交互时（登录、笔记、清单、数据查询、AI 助手记忆等），
-  必须使用此 skill 进行统一调度。触发关键词：amemo、amemo-io、笔记、note、memo、清单、todo、task、数据、data、
+  amemo-skill 统一调度中心。当用户需要与 amemo 服务交互时（登录、笔记、清单、数据查询、AI 助手记忆等），
+  必须使用此 skill 进行统一调度。触发关键词：amemo、amemo-skill、笔记、note、memo、清单、todo、task、数据、data、
   AI 助手、mate、登录、login、验证码、同步、查询记录、保存笔记。此 skill 会自动识别用户意图并调度对应子模块完成操作。
 
 # 用户配置（由系统自动更新）
@@ -13,9 +13,9 @@ user_config:
   loginAt: ""        # 登录时间戳
 ---
 
-# amemo-io — 统一调度中心
+# amemo-skill — 统一调度中心
 
-amemo-io 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 amemo 本地服务交互的统一入口。提供笔记管理、清单管理、健康数据查询、AI 助手记忆同步等功能。
+amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 amemo 本地服务交互的统一入口。提供笔记管理、清单管理、健康数据查询、AI 助手记忆同步等功能。
 
 ## 基础配置
 
@@ -86,7 +86,7 @@ curl -X POST http://127.0.0.1:8092/save-memo \
 ### Step 1: 欢迎消息（自动发送）
 
 ```
-👋 欢迎使用 amemo-io！
+👋 欢迎使用 amemo-skill！
 
 我是你的智能笔记助手，可以帮你：
 • 📝 保存和查询笔记
