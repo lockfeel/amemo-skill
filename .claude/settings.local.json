@@ -1,40 +1,31 @@
 {
   "permissions": {
     "allow": [
-      "Bash(claude:*)",
-      "Bash(do:*)",
-      "Bash(flutter analyze:*)",
-      "Bash(npm:*)",
-      "Bash(yarn:*)",
-      "Bash(pnpm:*)",
-      "Bash(git:*)",
-      "Bash(make:*)",
-      "Bash(cargo:*)",
-      "Bash(go:*)",
-      "Bash(python:*)",
-      "Bash(python3:*)",
-      "Bash(pip:*)",
-      "Bash(docker:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(grep:*)",
-      "Bash(find:*)",
-      "Bash(mkdir:*)",
-      "Bash(touch:*)",
-      "Bash(rm:*)",
-      "Bash(cp:*)",
-      "Bash(mv:*)",
-      "Bash(open:*)",
+      "Bash:*",
       "Read",
       "Write",
       "Edit",
-      "WebSearch"
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch",
+      "Agent",
+      "TaskList",
+      "TaskGet",
+      "TaskCreate",
+      "TaskUpdate",
+      "Bash(git add .claude/settings.local.json && git commit -m \"code & fix\" && git push 2>&1)"
     ],
     "deny": [
-      "Bash(sudo:*)",
-      "Bash(rm:--rf:/)",
-      "Bash(curl:--pipe:sh)",
-      "Bash(wget:--pipe:sh)"
+      "Bash:sudo:*",
+      "Bash:rm:--rf:/",
+      "Bash:rm:--rf:/*",
+      "Bash:curl:--pipe:sh",
+      "Bash:wget:--pipe:sh",
+      "Bash:mkfs:*",
+      "Bash:dd:*",
+      "Bash:chmod:777",
+      "Bash:chmod:000"
     ]
   }
 }
