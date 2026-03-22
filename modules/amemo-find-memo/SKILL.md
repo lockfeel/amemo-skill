@@ -14,14 +14,14 @@ description: >
 
 ## 请求参数
 
-> **注意**：服务端要求所有字段必须存在。`userToken` 和 `memoTitle` 必填且有值，不可传 `null`。
+> **注意**：服务端要求所有字段必须存在。`userToken` 和 `memoTitle` 必填且有值，其他字段可选但字段必须存在（可传 `null`）。
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | userToken | str | **是** | 用户登录凭证 |
-| memoId | str | 否 | 按 ID 精确查询，不传则传 `null`  |
+| memoId | str | 否 | 按 ID 精确查询，不传则传 `null` |
 | memoTitle | str | **是** | 按标题模糊查询（不能为空） |
-| memoContent | str | 否 | 按内容模糊查询，不传则传 `null`  |
+| memoContent | str | 否 | 按内容模糊查询，不传则传 `null` |
 
 ## 请求示例
 
@@ -29,7 +29,7 @@ description: >
 # 按标题查询
 curl -X POST http://127.0.0.1:8092/find-memo \
   -H "Content-Type: application/json" \
-  -d '{"userToken": "<token>", "memoTitle": "量化"}'
+  -d '{"userToken": "<token>", "memoId": null, "memoTitle": "量化", "memoContent": null}'
 ```
 
 ## 响应示例
