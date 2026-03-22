@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/save-memo
+- **路由**: POST https://skill.amemo.cn/save-memo
 - **Bean**: MemoBean
 - **Content-Type**: application/json
 
@@ -27,12 +27,12 @@ description: >
 
 ```bash
 # 新建备忘录
-curl -X POST http://127.0.0.1:8092/save-memo \
+curl -X POST https://skill.amemo.cn/save-memo \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "memoId": null, "memoTitle": "开会记录", "memoContent": "讨论了Q2计划"}'
 
 # 更新备忘录（传入已有 memoId）
-curl -X POST http://127.0.0.1:8092/save-memo \
+curl -X POST https://skill.amemo.cn/save-memo \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "memoId": "123456", "memoTitle": "开会记录", "memoContent": "更新了内容"}'
 ```

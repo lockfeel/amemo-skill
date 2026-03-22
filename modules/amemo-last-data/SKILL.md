@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/last-data
+- **路由**: POST https://skill.amemo.cn/last-data
 - **Bean**: DataBean
 - **Content-Type**: application/json
 
@@ -25,12 +25,12 @@ description: >
 
 ```bash
 # 获取所有类型最新数据（dataType 传 null）
-curl -X POST http://127.0.0.1:8092/last-data \
+curl -X POST https://skill.amemo.cn/last-data \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "dataType": null}'
 
 # 按类型获取最新
-curl -X POST http://127.0.0.1:8092/last-data \
+curl -X POST https://skill.amemo.cn/last-data \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "dataType": "report"}'
 ```

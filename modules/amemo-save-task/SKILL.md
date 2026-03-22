@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/save-task
+- **路由**: POST https://skill.amemo.cn/save-task
 - **Bean**: TaskBean
 - **Content-Type**: application/json
 
@@ -29,12 +29,12 @@ description: >
 
 ```bash
 # 新建任务
-curl -X POST http://127.0.0.1:8092/save-task \
+curl -X POST https://skill.amemo.cn/save-task \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "taskId": null, "taskTitle": "完成报告", "taskExplain": null, "taskTime": "2025-12-31", "taskEmail": ["a@example.com"]}'
 
 # 更新任务（传入已有 taskId）
-curl -X POST http://127.0.0.1:8092/save-task \
+curl -X POST https://skill.amemo.cn/save-task \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "taskId": "123456", "taskTitle": "完成报告", "taskExplain": null, "taskTime": "2025-12-31", "taskEmail": null}'
 ```

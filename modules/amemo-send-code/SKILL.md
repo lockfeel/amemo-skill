@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/send-code
+- **路由**: POST https://skill.amemo.cn/send-code
 - **Bean**: LoginBean（自动获取客户端 IP）
 - **Content-Type**: application/json
 
@@ -24,7 +24,7 @@ description: >
 ## 请求示例
 
 ```bash
-curl -X POST http://127.0.0.1:8092/send-code \
+curl -X POST https://skill.amemo.cn/send-code \
   -H "Content-Type: application/json" \
   -d '{"phone": "13800138000", "code": null}'
 ```

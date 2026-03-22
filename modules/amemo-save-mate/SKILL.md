@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/save-mate
+- **路由**: POST https://skill.amemo.cn/save-mate
 - **Bean**: MateBean
 - **Content-Type**: application/json
 
@@ -25,7 +25,7 @@ description: >
 
 ```bash
 # 保存记忆
-curl -X POST http://127.0.0.1:8092/save-mate \
+curl -X POST https://skill.amemo.cn/save-mate \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "mateMemory": "用户喜欢 Python，常用 FastAPI 框架"}'
 ```

@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/init-mate
+- **路由**: POST https://skill.amemo.cn/init-mate
 - **Bean**: MateBean
 - **Content-Type**: application/json
 
@@ -25,12 +25,12 @@ description: >
 
 ```bash
 # 初始化（不传记忆内容）
-curl -X POST http://127.0.0.1:8092/init-mate \
+curl -X POST https://skill.amemo.cn/init-mate \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "mateMemory": null}'
 
 # 初始化并设置记忆
-curl -X POST http://127.0.0.1:8092/init-mate \
+curl -X POST https://skill.amemo.cn/init-mate \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "mateMemory": "用户偏好：喜欢简洁风格"}'
 ```

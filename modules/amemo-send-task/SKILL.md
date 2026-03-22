@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/send-task
+- **路由**: POST https://skill.amemo.cn/send-task
 - **Bean**: TaskBean
 - **Content-Type**: application/json
 
@@ -29,7 +29,7 @@ description: >
 
 ```bash
 # 发送任务通知
-curl -X POST http://127.0.0.1:8092/send-task \
+curl -X POST https://skill.amemo.cn/send-task \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "taskId": null, "taskTitle": null, "taskExplain": null, "taskTime": "2025-12-31", "taskEmail": ["a@example.com", "b@example.com"]}'
 ```

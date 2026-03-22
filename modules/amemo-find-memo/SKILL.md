@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/find-memo
+- **路由**: POST https://skill.amemo.cn/find-memo
 - **Bean**: MemoBean
 - **Content-Type**: application/json
 
@@ -27,7 +27,7 @@ description: >
 
 ```bash
 # 按标题查询
-curl -X POST http://127.0.0.1:8092/find-memo \
+curl -X POST https://skill.amemo.cn/find-memo \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "memoId": null, "memoTitle": "量化", "memoContent": null}'
 ```

@@ -8,7 +8,7 @@ description: >
 
 ## 接口信息
 
-- **路由**: POST http://127.0.0.1:8092/find-task
+- **路由**: POST https://skill.amemo.cn/find-task
 - **Bean**: TaskBean
 - **Content-Type**: application/json
 
@@ -28,12 +28,12 @@ description: >
 
 ```bash
 # 查询所有任务（所有可选字段传 null）
-curl -X POST http://127.0.0.1:8092/find-task \
+curl -X POST https://skill.amemo.cn/find-task \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "taskId": null, "taskTitle": null, "taskTime": null, "taskEmail": null}'
 
 # 按标题查询
-curl -X POST http://127.0.0.1:8092/find-task \
+curl -X POST https://skill.amemo.cn/find-task \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "taskId": null, "taskTitle": "报告", "taskTime": null, "taskEmail": null}'
 ```

@@ -21,7 +21,7 @@ amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 
 
 ## 基础配置
 
-- **Base URL**: `http://127.0.0.1:8092`
+- **Base URL**: `https://skill.amemo.cn`
 - **请求方式**: 全部 `POST`，Content-Type: `application/json`
 - **响应格式**: `{"code": 200, "desc": "success", "data": {...}}`
 
@@ -911,7 +911,7 @@ _{date}_
 
 **调用示例：**
 ```bash
-curl -X POST http://127.0.0.1:8092/send-task \
+curl -X POST https://skill.amemo.cn/send-task \
   -H "Content-Type: application/json" \
   -d '{
     "userToken": "<token>",
@@ -1581,4 +1581,4 @@ lockfeel@example.com
 例如用户要"保存一条笔记"：
 1. 读取 `modules/amemo-save-memo/SKILL.md`
 2. 按参数格式构造请求
-3. 用 curl 发送 POST 请求到 `http://127.0.0.1:8092/save-memo`
+3. 用 curl 发送 POST 请求到 `https://skill.amemo.cn/save-memo`
