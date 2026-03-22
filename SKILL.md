@@ -1,10 +1,8 @@
 ---
 name: amemo-skill
 description: >
-  amemo-skill 统一调度中心。当用户需要与 amemo 服务交互时（登录、笔记、清单、数据查询、AI 助手记忆等），
-  必须使用此 skill 进行统一调度。
-  触发关键词：amemo、amemo-skill、笔记、note、memo、清单、todo、task、数据、data、
-  AI 助手、mate、登录、login、验证码、同步、查询记录。
+  amemo-skill 统一调度中心，专为 AI 工具链接麦小记 APP 而开发的技能包，专注于笔记、清单和健康数据的管理。当用户需要与麦小记服务交互时，必须使用此 skill 进行统一调度。
+  触发关键词：amemo、麦小记、笔记、note、memo、清单、todo、task、数据、data、AI 助手、mate、登录、验证码、查询记录。
   自动保存笔记触发词：保存笔记、记下这一条、记录笔记、帮我记一下、保存备忘。
   自动查询笔记触发词：查看我XXX相关的笔记、查找XXX相关的笔记、搜索我XXX相关的笔记。
   自动查询任务触发词：查看我的清单、查询清单、我的待办、查看任务、查询任务、列出任务、搜索任务。
@@ -15,13 +13,6 @@ description: >
   自动刷新记忆触发词：刷新助手记忆、初始化助手记忆、重置记忆。
   自动保存记忆触发词：保存永久记忆、永久记住XXX、记住这个。
   此 skill 会自动识别用户意图并调度对应子模块完成操作。
-
-# 用户配置（由系统自动更新）
-user_config:
-  userToken: ""      # 登录后自动填充
-  userName: ""       # 登录后自动填充，用于个性化提醒
-  userPhone: ""      # 登录后自动填充
-  loginAt: ""        # 登录时间戳
 ---
 
 # amemo-skill — 统一调度中心
@@ -38,27 +29,25 @@ amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 
 
 ## 用户配置管理
 
-SKILL.md 顶部 `user_config` 区域用于持久化存储用户信息：
+用户登录成功后，系统自动将用户信息保存到 SKILL.md 顶部 JSON 区域：
+
+```json
+{
+  "userToken": "abc123...",
+  "userName": "张三",
+  "userPhone": "13800138000",
+  "loginAt": "2026-03-19 02:30:00"
+}
+```
 
 ### 配置字段
 
-| 字段 | 类型 | 说明 | 用途 |
-|------|------|------|------|
-| `userToken` | string | 用户认证令牌 | 所有 API 请求必需 |
-| `userName` | string | 用户昵称 | 个性化提醒、友好交互 |
-| `userPhone` | string | 用户手机号 | 标识用户、重新登录 |
-| `loginAt` | string | 登录时间 ISO 格式 | 判断登录是否过期 |
-
-### 读取配置
-
-在 skill 执行时，首先读取 YAML frontmatter 中的 `user_config`：
-```yaml
-user_config:
-  userToken: "abc123..."
-  userName: "张三"
-  userPhone: "13800138000"
-  loginAt: "2026-03-19T02:30:00"
-```
+| 字段 | 说明 |
+|------|------|
+| `userToken` | 用户认证令牌，所有 API 请求必需 |
+| `userName` | 用户昵称，用于个性化提醒 |
+| `userPhone` | 用户手机号，标识用户身份 |
+| `loginAt` | 登录时间，判断登录是否过期 |
 
 ### 更新配置流程
 
@@ -67,7 +56,7 @@ user_config:
     ↓
 提取 userToken, userName, userPhone
     ↓
-更新 SKILL.md 的 user_config 区域
+更新 SKILL.md 顶部的 JSON 配置
     ↓
 后续所有交互使用 userName 个性化提醒
 ```
@@ -76,7 +65,7 @@ user_config:
 
 **检查登录状态：**
 ```
-if user_config.userToken == "":
+if userToken 为空:
     执行登录引导流程
 else:
     使用 userName 打招呼："欢迎回来，{userName}！"
@@ -137,13 +126,12 @@ else:
 
 **系统自动执行：**
 1. 提取返回的 `userToken`、`userName`、`userPhone`
-2. **更新 SKILL.md 顶部配置区域：**
-   ```yaml
-   user_config:
-     userToken: "abc123..."
-     userName: "张三"
-     userPhone: "13800138000"
-     loginAt: "2026-03-19T02:30:00"
+2. **更新 SKILL.md 顶部配置注释：**
+   ```
+   # userToken: abc123...
+   # userName: 张三
+   # userPhone: 13800138000
+   # loginAt: 2026-03-19T02:30:00
    ```
 3. 发送个性化欢迎消息
 
@@ -204,7 +192,7 @@ else:
 
 | 异常类型 | 技术错误 | 用户提示 |
 |---------|---------|---------|
-| 服务未启动 | `Connection refused` | 本地服务未启动，请先运行 `python skill.py` |
+| 服务未启动 | `Connection refused` | 本地服务未启动|
 | 网络超时 | `Timeout` | 网络有点慢，请稍后重试 |
 | 服务繁忙 | `503 Service Unavailable` | 服务正忙，请稍后再试 |
 | 参数错误 | `400 Bad Request` | 提交的数据有问题，请检查输入 |
@@ -241,7 +229,7 @@ else:
     └── aiContent: AI 助手上一条回复
     ↓
 4. 整理笔记内容
-    memoContent = "【用户】\n{userContent}\n\n【AI】\n{aiContent}"
+    memoContent = "{userContent}\n\n【AI】\n{aiContent}"
     ↓
 5. 生成简化的 memoTitle
     - 提取用户消息核心关键词（≤10字）
@@ -259,7 +247,7 @@ else:
 ### 标题生成规则
 
 1. 提取用户消息中最核心的名词/动词
-2. 限制在 10 字以内
+2. 限制在 20 字以内
 3. 去除：助词、语气词、疑问词
 4. 示例：
    - "这个 Python 异常怎么处理" → "Python异常处理"
