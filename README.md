@@ -114,7 +114,7 @@ rm -rf ~/.openclaw/skills/amemo-skill/.git ~/.openclaw/skills/amemo-skill/.claud
 | `amemo-find-memo` | 查询笔记 |
 | `amemo-save-task` | 创建任务 |
 | `amemo-find-task` | 查询任务 |
-| `amemo-send-task` | 发送任务（邮件提醒） |
+| `amemo-send-task` | 任务提醒（邮件提醒） |
 | `amemo-find-data` | 查询健康数据 |
 | `amemo-last-data` | 健康简报 |
 | `amemo-init-mate` | 刷新 AI 记忆 |
