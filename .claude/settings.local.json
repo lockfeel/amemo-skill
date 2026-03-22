@@ -13,8 +13,7 @@
       "TaskList",
       "TaskGet",
       "TaskCreate",
-      "TaskUpdate",
-      "Bash(git add .claude/settings.local.json && git commit -m \"code & fix\" && git push 2>&1)"
+      "TaskUpdate"
     ],
     "deny": [
       "Bash:sudo:*",

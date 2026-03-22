@@ -18,7 +18,7 @@ description: >
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | userToken | str | 是 | 用户登录凭证 |
-| dataType | str | 否 | 数据类型（用于筛选） |
+| dataType | str | 否 | 数据类型（步数/睡眠/血氧/血压/心率/消耗） |
 
 ## 请求示例
 
@@ -31,7 +31,7 @@ curl -X POST http://127.0.0.1:8092/find-data \
 # 按类型查询
 curl -X POST http://127.0.0.1:8092/find-data \
   -H "Content-Type: application/json" \
-  -d '{"userToken": "<token>", "dataType": "some_type"}'
+  -d '{"userToken": "<token>", "dataType": "步数"}'
 ```
 
 ## 响应示例
