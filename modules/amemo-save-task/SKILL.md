@@ -2,7 +2,6 @@
 name: amemo-save-task
 description: >
   amemo 保存任务模块。当用户需要创建或更新任务时使用。
-  触发词：保存任务、创建任务、save task、新建任务、添加任务。
 ---
 
 # amemo-save-task — 保存任务

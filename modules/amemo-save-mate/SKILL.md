@@ -2,7 +2,6 @@
 name: amemo-save-mate
 description: >
   amemo 保存 AI 助手记忆模块。当用户需要更新或追加 AI 助手的长期记忆时使用。
-  触发词：保存记忆、save mate、更新助手记忆、助手记忆。
 ---
 
 # amemo-save-mate — 保存助手记忆

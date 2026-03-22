@@ -2,7 +2,6 @@
 name: amemo-find-data
 description: >
   amemo 查询数据模块。当用户需要按类型查询 amemo 中存储的数据时使用。
-  触发词：查询数据、find data、查看数据、data、数据查询。
 ---
 
 # amemo-find-data — 查询数据

@@ -2,7 +2,6 @@
 name: amemo-send-task
 description: >
   amemo 发送任务模块。当用户需要将任务推送给相关人员（如通过邮件通知）时使用。
-  触发词：发送任务、推送任务、send task、通知任务、分发任务。
 ---
 
 # amemo-send-task — 发送任务

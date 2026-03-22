@@ -1,8 +1,7 @@
 ---
 name: amemo-login
 description: >
-  amemo 用户登录模块。当用户需要登录 amemo 获取 userToken 时使用。
-  触发词：登录、login、获取token、userToken。
+  amemo 用户登录模块。当用户需要登录 amemo 麦小记 获取 userToken 时使用。
 ---
 
 # amemo-login — 用户登录

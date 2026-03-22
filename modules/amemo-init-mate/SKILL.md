@@ -2,7 +2,6 @@
 name: amemo-init-mate
 description: >
   amemo 初始化 AI 助手模块。当用户首次使用或需要重置 AI 助手记忆时使用。
-  触发词：初始化助手、init mate、init aide、重置助手记忆、初始化AI助手。
 ---
 
 # amemo-init-mate — 初始化 AI 助手

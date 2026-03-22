@@ -7,8 +7,11 @@ description: >
   AI 助手、mate、登录、login、验证码、同步、查询记录。
   自动保存笔记触发词：保存笔记、记下这一条、记录笔记、帮我记一下、保存备忘。
   自动查询笔记触发词：查看我XXX相关的笔记、查找XXX相关的笔记、搜索我XXX相关的笔记。
+  自动查询任务触发词：查看我的清单、查询清单、我的待办、查看任务、查询任务、列出任务、搜索任务。
   自动查询数据触发词：查看我的XXX数据、查找我的XXX数据、XXX数据怎么样（XXX为步数/睡眠/血氧/血压/心率/消耗）。
   自动健康简报触发词：今日健康简报、今日健康总览、今日健康情况、健康简报、健康日报。
+  自动保存任务触发词：今天XXX、明天XXX、昨天XXX、后天XXX、将来XXX、未来XXX、最近XXX、最新XXX、近期XXX、今日XXX、明日XXX、昨日XXX、12月XX日XXX（具体日期）。
+  自动邮件提醒设置：创建任务后自动询问是否开启邮件提醒，输入邮箱后验证并设置本地定时任务。
   自动刷新记忆触发词：刷新助手记忆、初始化助手记忆、重置记忆。
   自动保存记忆触发词：保存永久记忆、永久记住XXX、记住这个。
   此 skill 会自动识别用户意图并调度对应子模块完成操作。
@@ -29,10 +32,9 @@ amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 
 
 - **Base URL**: `http://127.0.0.1:8092`
 - **请求方式**: 全部 `POST`，Content-Type: `application/json`
-- **响应格式**:
-```json
-{"code": 200, "desc": "success", "data": { ... }}
-```
+- **响应格式**: `{"code": 200, "desc": "success", "data": {...}}`
+
+> **注意**：具体 API 请求示例和响应数据结构，请查阅对应子模块的 SKILL.md
 
 ## 用户配置管理
 
@@ -81,11 +83,7 @@ else:
 ```
 
 **API 请求时：**
-```bash
-curl -X POST http://127.0.0.1:8092/save-memo \
-  -H "Content-Type: application/json" \
-  -d "{\"userToken\": \"{user_config.userToken}\", ...}"
-```
+> 读取对应子模块的 SKILL.md 获取完整的请求参数和 curl 示例
 
 ## 安装后引导流程（Onboarding）
 
@@ -100,7 +98,7 @@ curl -X POST http://127.0.0.1:8092/save-memo \
 • 📝 保存和查询笔记
 • ✅ 管理待办清单
 • 📊 查看健康数据
-• 🤖 同步 AI 助手记忆
+• 🤖 同步 AI 记忆
 
 请先完成登录，发送你的手机号：
 示例：13800138000
@@ -251,12 +249,7 @@ curl -X POST http://127.0.0.1:8092/save-memo \
     - 示例："这个函数怎么用" → "函数使用方法"
     ↓
 6. 调用接口
-    POST /save-memo
-    {
-      "userToken": "{userToken}",
-      "memoTitle": "{memoTitle}",
-      "memoContent": "{memoContent}"
-    }
+    > 读取 modules/amemo-save-memo/SKILL.md 获取请求参数
     ↓
 7. 返回结果
     - 成功：✅ 已保存笔记：「{memoTitle}」
@@ -298,11 +291,7 @@ curl -X POST http://127.0.0.1:8092/save-memo \
     ├── 保留核心主题词
     ↓
 4. 调用接口
-    POST /find-memo
-    {
-      "userToken": "{userToken}",
-      "memoTitle": "{关键词}"
-    }
+    > 读取 modules/amemo-find-memo/SKILL.md 获取请求参数
     ↓
 5. 格式化输出 Markdown
 ```
@@ -402,11 +391,7 @@ _{createdAt}_
     ├── 不匹配 → 告知用户暂无可用数据类型
     ↓
 5. 调用接口
-    POST /find-data
-    {
-      "userToken": "{userToken}",
-      "dataType": "{dataType}"
-    }
+    > 读取 modules/amemo-find-data/SKILL.md 获取请求参数
     ↓
 6. 数据总结输出
 ```
@@ -562,10 +547,7 @@ _{createdAt}_
     ├── 无 token → 引导登录流程
     ↓
 3. 调用接口（不传 dataType，获取所有类型最新数据）
-    POST /last-data
-    {
-      "userToken": "{userToken}"
-    }
+    > 读取 modules/amemo-last-data/SKILL.md 获取请求参数
     ↓
 4. 解析返回数据
     ├── 步数：steps, stepGoal
@@ -759,6 +741,329 @@ _{date}_
 4. 获取所有类型最新数据
 5. 解析并生成健康简报输出
 
+## 自动保存任务调度（时间词语触发）
+
+当用户对话中包含时间词语时，自动提取待办事项并调用 `amemo-save-task` 接口保存。
+
+### 时间词语识别
+
+| 时间词语 | 转换规则 | 示例 |
+|---------|---------|------|
+| 今天 / 今日 | 当天 00:00:00 | 2024-03-22 00:00:00 |
+| 明天 / 明日 | 明天 00:00:00 | 2024-03-23 00:00:00 |
+| 昨天 / 昨日 | 昨天 00:00:00 | 2024-03-21 00:00:00 |
+| 后天 | 后天 00:00:00 | 2024-03-24 00:00:00 |
+| 将来 / 未来 | 当前时间 + 365天 | 2025-03-22 00:00:00 |
+| 最近 / 最新 / 近期 | 当天时间 + 15天 | 2024-04-06 00:00:00 |
+| 具体日期 | 原样转换 | 用户说"12月25日" → 2024-12-25 00:00:00 |
+
+### 时间转换优先级
+
+1. 精确日期匹配优先（如"12月25日"）
+2. 时间词语次之（如"明天"、"下周"）
+3. 无法识别时使用当前时间
+
+### 自动保存任务流程
+
+```
+1. 检测用户对话中的时间词语
+    ↓
+2. 提取并转换时间
+    ├── 今天/今日 → 当天 00:00:00
+    ├── 明天/明日 → 明天 00:00:00
+    ├── 将来/未来 → 当前 + 365天
+    ├── 最近/最新/近期 → 当前 + 15天
+    └── 具体日期 → 解析后 00:00:00
+    ↓
+3. 提取待办事项
+    ├── 从对话中提取任务标题（taskTitle）
+    ├── 去除语气词、感叹词
+    └── 保留核心任务内容
+    ↓
+4. 检查 userToken
+    ├── 无 token → 引导登录流程
+    ↓
+5. 调用接口
+    > 读取 modules/amemo-save-task/SKILL.md 获取请求参数
+    ↓
+6. 返回保存结果
+```
+
+### 请求参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| userToken | str | 是 | 用户登录凭证 |
+| taskTitle | str | 是 | 任务标题（从对话中提取） |
+| taskTime | str | 是 | 任务时间（转换后格式：2024-12-12 00:00:00） |
+
+### 响应处理
+
+**成功时：**
+```
+✅ 已为您保存待办：「{taskTitle}」
+📅 时间：{taskTime}
+```
+
+**失败时：**
+```
+❌ 保存失败，请重试
+```
+
+### 调用示例
+
+**用户输入：**
+```
+明天要去开会讨论项目进度
+```
+
+**系统处理：**
+1. 检测到时间词语：`明天`
+2. 转换时间：`2024-03-23 00:00:00`
+3. 提取待办：`开会讨论项目进度`
+4. 调用：`POST /save-task` with `taskTitle: "开会讨论项目进度"`, `taskTime: "2024-03-23 00:00:00"`
+
+**用户输入：**
+```
+近期需要提交代码审查
+```
+
+**系统处理：**
+1. 检测到时间词语：`近期`
+2. 转换时间：`2024-04-06 00:00:00`
+3. 提取待办：`提交代码审查`
+4. 调用：`POST /save-task` with `taskTitle: "提交代码审查"`, `taskTime: "2024-04-06 00:00:00"`
+
+**用户输入：**
+```
+12月25日要送礼物
+```
+
+**系统处理：**
+1. 检测到时间词语：`12月25日`
+2. 转换时间：`2024-12-25 00:00:00`
+3. 提取待办：`送礼物`
+4. 调用：`POST /save-task` with `taskTitle: "送礼物"`, `taskTime: "2024-12-25 00:00:00"`
+
+## 自动查询任务调度
+
+当用户说以下触发词时，自动调用 `amemo-find-task` 接口查询任务清单：
+
+| 触发词 | 说明 |
+|--------|------|
+| 查看我的清单 | 查看用户的所有任务清单 |
+| 查询清单 | 查询任务清单 |
+| 我的待办 | 查看待办事项 |
+| 查看任务 | 查看任务列表 |
+| 查询任务 | 查询已有任务 |
+| 列出任务 | 列出所有任务 |
+| 搜索任务 | 搜索任务 |
+
+### 自动查询任务流程
+
+```
+1. 识别触发词（查看/查询/列出 + 清单/任务/待办）
+    ↓
+2. 检查 userToken 是否存在
+    ├── 无 token → 引导登录流程
+    ↓
+3. 调用接口
+    > 读取 modules/amemo-find-task/SKILL.md 获取请求参数
+    ↓
+4. 解析返回数据
+    ├── todayList: 今日列表
+    ├── tomorrowList: 明日列表
+    ├── recentList: 近期列表（15天内）
+    ├── futureList: 未来列表
+    ├── finishList: 已完成列表
+    └── myFollow: 我的收藏
+    ↓
+5. 格式化输出 Markdown
+```
+
+### 查询任务展示模板
+
+调用成功后，根据返回数据为用户组织清晰的任务清单展示。
+
+**无数据时回复：**
+```
+暂无待办清单。
+
+你可以：
+• 创建新的待办任务
+• 使用「今天XXX」添加待办
+```
+
+**任务清单展示模板：**
+````markdown
+## ✅ 待办清单
+
+---
+
+### 📅 今日待办 {todayCount} 项
+{today_list_items}
+
+---
+
+### 📅 明日待办 {tomorrowCount} 项
+{tomorrow_list_items}
+
+---
+
+### 📆 近期待办（15天内）{recentCount} 项
+{recent_list_items}
+
+---
+
+### 📋 未来待办 {futureCount} 项
+{future_list_items}
+
+---
+
+### ⭐ 我的收藏 {followCount} 项
+{follow_list_items}
+
+---
+
+### ✔ 已完成 {finishCount} 项
+{finish_list_items}
+
+---
+
+### 📊 统计概览
+
+| 分类 | 数量 |
+|------|------|
+| 今日待办 | {count} |
+| 明日待办 | {count} |
+| 近期待办 | {count} |
+| 未来待办 | {count} |
+| 我的收藏 | {count} |
+| 已完成 | {count} |
+| **总计** | **{count}** |
+````
+
+### 调用示例
+
+**用户输入：**
+```
+查看我的待办清单
+```
+
+**系统处理：**
+1. 识别触发词：`查看我的清单`
+2. 检查 `userToken`
+3. 调用：`POST /find-task` with `userToken: "{token}"`
+4. 解析返回数据，按分类组织展示
+
+**用户输入：**
+```
+查询任务
+```
+
+**系统处理：**
+1. 识别触发词：`查询任务`
+2. 检查 `userToken`
+3. 调用：`POST /find-task` with `userToken: "{token}"`
+4. 格式化输出给用户
+
+## 邮件提醒设置流程
+
+创建待办清单后，自动询问用户是否需要开启邮件提醒，并支持本地定时任务设置。
+
+### 创建清单后的邮件提醒询问
+
+```
+✅ 已为您保存待办：「{taskTitle}」
+📅 时间：{taskTime}
+
+是否需要开启邮件提醒？
+• 是 - 请输入接收提醒的邮箱
+• 否 - 稍后提醒我
+```
+
+### 用户选择"是"后的流程
+
+```
+请输入接收提醒的邮箱地址：
+示例：user@example.com
+```
+
+### 邮箱格式验证
+
+**正则表达式：** `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+
+**验证失败回复：**
+```
+❌ 邮箱格式不正确，请重新输入：
+示例：user@example.com
+```
+
+**验证成功回复：**
+```
+✅ 邮箱格式验证通过
+
+📧 提醒设置：
+• 任务：「{taskTitle}」
+• 提醒时间：{taskTime}
+• 接收邮箱：{email}
+
+是否确认设置？
+• 确认 - 开启提醒
+• 修改 - 重新输入邮箱
+```
+
+### 本地定时任务设置
+
+确认后，在本地创建定时任务：
+
+```
+✅ 邮件提醒已设置！
+
+⏰ 提醒详情：
+• 任务：{taskTitle}
+• 时间：{taskTime}
+• 邮箱：{email}
+
+到达提醒时间后，将自动发送邮件通知。
+```
+
+### 定时任务执行流程
+
+```
+1. 定时任务触发（到达 taskTime）
+    ↓
+2. 调用 amemo-send-task 接口
+    > 读取 modules/amemo-send-task/SKILL.md 获取请求参数
+    ↓
+3. 发送邮件提醒
+    ↓
+4. 记录发送状态
+```
+
+### 调用示例
+
+**用户输入：**
+```
+明天要去开会，发邮件到 test@example.com
+```
+
+**系统处理：**
+1. 提取任务：`开会`
+2. 转换时间：`2024-03-23 00:00:00`
+3. 保存清单：调用 `/save-task`
+4. 询问邮件提醒：用户选择"是"
+5. 获取邮箱：`test@example.com`
+6. 验证格式：通过
+7. 设置定时任务：明天 00:00:00 执行
+8. 到期执行：调用 `/send-task` 发送邮件
+
+### 注意事项
+
+- 本地定时任务由 amemo-skill 管理，到期自动调用 `amemo-send-task` 发送邮件
+- 邮件发送依赖 amemo 服务正常运行
+- 支持设置多个邮箱，用逗号分隔
+
 ## 调度流程
 
 当用户提出请求时，按以下步骤操作：
@@ -770,38 +1075,23 @@ _{date}_
 
 ## 子模块索引
 
-所有子模块位于 `modules/` 目录，每个子模块对应一个 API 端点：
+所有子模块位于 `modules/` 目录，每个子模块对应一个 API 端点。详细请求/响应示例请查阅各子模块 SKILL.md：
 
-### 认证模块
-| 模块 | 路由 | 作用 | 触发词 |
-|------|------|------|--------|
-| `amemo-login` | POST /login | 用户登录获取 token | 登录、login、token |
-| `amemo-send-code` | POST /send-code | 发送手机验证码 | 验证码、code、发送 |
+| 模块 | 路由 | 作用 |
+|------|------|------|
+| `amemo-send-code` | POST /send-code | 发送手机验证码 |
+| `amemo-login` | POST /login | 用户登录获取 token |
+| `amemo-save-memo` | POST /save-memo | 保存笔记 |
+| `amemo-find-memo` | POST /find-memo | 查询笔记 |
+| `amemo-save-task` | POST /save-task | 保存任务 |
+| `amemo-find-task` | POST /find-task | 查询任务 |
+| `amemo-send-task` | POST /send-task | 发送任务（邮件提醒） |
+| `amemo-find-data` | POST /find-data | 查询健康数据 |
+| `amemo-last-data` | POST /last-data | 健康简报 |
+| `amemo-init-mate` | POST /init-mate | 刷新助手记忆 |
+| `amemo-save-mate` | POST /save-mate | 保存永久记忆 |
 
-### 笔记模块
-| 模块 | 路由 | 作用 | 触发词 |
-|------|------|------|--------|
-| `amemo-save-memo` | POST /save-memo | 保存笔记 | 保存笔记、记笔记、save note |
-| `amemo-find-memo` | POST /find-memo | 查询笔记 | 查看笔记、查找笔记、搜索笔记、find memo |
-
-### 清单模块
-| 模块 | 路由 | 作用 | 触发词 |
-|------|------|------|--------|
-| `amemo-save-task` | POST /save-task | 保存清单 | 保存清单、创建清单、save todo |
-| `amemo-find-task` | POST /find-task | 查询清单 | 查询清单、查看清单、find todo |
-| `amemo-send-task` | POST /send-task | 发送清单 | 发送清单、推送清单、send todo |
-
-### 数据模块
-| 模块 | 路由 | 作用 | 触发词 |
-|------|------|------|--------|
-| `amemo-find-data` | POST /find-data | 查询数据 | 查看我的XXX数据、步数、睡眠、血氧、血压、心率、消耗 |
-| `amemo-last-data` | POST /last-data | 健康简报 | 今日健康简报、健康总览、健康日报、最新数据 |
-
-### AI 助手模块
-| 模块 | 路由 | 作用 | 触发词 |
-|------|------|------|--------|
-| `amemo-init-mate` | POST /init-mate | 刷新助手记忆 | 刷新助手记忆、初始化助手记忆、重置记忆、初始化记忆 |
-| `amemo-save-mate` | POST /save-mate | 保存永久记忆 | 保存永久记忆、永久记住、记住这个 |
+> **注意**：AI 助手模块仅适用于 OpenClaw 或基于 OpenClaw 开发的软件。
 
 ## 自动刷新助手记忆调度
 
@@ -813,12 +1103,7 @@ _{date}_
 | 初始化助手记忆 | 初始化 AI 助手记忆 |
 | 重置记忆 | 重置 AI 助手记忆 |
 
-### MEMORY.md 支持检查
-
-Claude Code 的 auto memory 功能支持 MEMORY.md 文件：
-- **路径格式**：`memory/MEMORY.md`（相对于项目目录）
-- **文件用途**：持久化存储用户偏好、习惯、工作方式等记忆信息
-- **自动加载**：Claude Code 启动时自动读取，作为对话上下文的一部分
+> **前提**：仅在 OpenClaw 或基于 OpenClaw 开发的应用中生效，其他 AI 工具（如 Claude Code）不支持此功能。
 
 ### 自动刷新记忆流程
 
@@ -832,10 +1117,7 @@ Claude Code 的 auto memory 功能支持 MEMORY.md 文件：
     ├── 不存在 → 自动创建 memory 目录
     ↓
 4. 调用接口
-    POST /init-mate
-    {
-      "userToken": "{userToken}"
-    }
+    > 读取 modules/amemo-init-mate/SKILL.md 获取请求参数
     ↓
 5. 解析响应
     └── data.mateMemory: AI 助手记忆内容（Markdown 格式）
@@ -847,27 +1129,9 @@ Claude Code 的 auto memory 功能支持 MEMORY.md 文件：
 7. 返回结果给用户
 ```
 
-### MEMORY.md 文件路径
-
-| 项目 | 路径 |
-|------|------|
-| Claude Code auto memory | `memory/MEMORY.md` |
-| 绝对路径 | `/Users/lockfeel/.claude/projects/-Users-lockfeel-Judian-amemo-skill-memory/memory/MEMORY.md` |
-
 ### 接口响应解析
 
-响应示例：
-```json
-{
-  "code": 200,
-  "desc": "success",
-  "data": {
-    "mateId": "xxx",
-    "mateMemory": "# 用户记忆\n\n## 偏好设置\n- 喜欢简洁风格的回复\n- 使用中文交流\n\n## 工作习惯\n- 每周一上午开会\n...",
-    "updatedAt": "2026-03-22T10:00:00"
-  }
-}
-```
+> 读取 modules/amemo-init-mate/SKILL.md 获取完整响应数据结构
 
 ### 更新 MEMORY.md 模板
 
@@ -933,6 +1197,8 @@ Claude Code 的 auto memory 功能支持 MEMORY.md 文件：
 
 ## 自动保存永久记忆调度
 
+> **注意**：此功能仅适用于 OpenClaw 或基于 OpenClaw 开发的软件。
+
 当用户说以下触发词时，等待 MEMORY.md 更新完成后，调用 `amemo-save-mate` 接口，将本地 MEMORY.md 内容同步到服务器：
 
 | 触发词 | 说明 |
@@ -955,11 +1221,7 @@ Claude Code 的 auto memory 功能支持 MEMORY.md 文件：
 4. 读取 memory/MEMORY.md 文件内容
     ↓
 5. 调用接口
-    POST /save-mate
-    {
-      "userToken": "{userToken}",
-      "mateMemory": "{MEMORY.md 内容}"
-    }
+    > 读取 modules/amemo-save-mate/SKILL.md 获取请求参数
     ↓
 6. 返回保存结果
 ```
@@ -992,32 +1254,7 @@ Claude Code 的 auto memory 功能支持 MEMORY.md 文件：
 
 ### 接口请求参数
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| userToken | str | 是 | 用户登录凭证 |
-| mateMemory | str | 是 | MEMORY.md 文件内容 |
-
-### 请求示例
-
-```bash
-curl -X POST http://127.0.0.1:8092/save-mate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "userToken": "<token>",
-    "mateMemory": "# 用户记忆\n\n## 偏好设置\n- 喜欢 Python\n- 常用 FastAPI\n..."
-  }'
-```
-
-### 响应解析
-
-成功响应：
-```json
-{
-  "code": 200,
-  "desc": "success",
-  "data": "记忆保存成功"
-}
-```
+> 读取 modules/amemo-save-mate/SKILL.md 获取完整请求参数和响应数据
 
 ### 成功提示模板
 

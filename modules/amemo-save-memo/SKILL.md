@@ -2,7 +2,6 @@
 name: amemo-save-memo
 description: >
   amemo 保存备忘录模块。当用户需要创建或更新备忘录时使用。
-  触发词：保存备忘、写备忘、save memo、创建备忘录、记下来、记录。
 ---
 
 # amemo-save-memo — 保存备忘录

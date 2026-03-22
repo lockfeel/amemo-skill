@@ -2,7 +2,6 @@
 name: amemo-send-code
 description: >
   amemo 发送验证码模块。当用户需要向手机发送验证码时使用，通常在登录前调用。
-  触发词：发送验证码、验证码、send code、获取验证码。
 ---
 
 # amemo-send-code — 发送验证码
