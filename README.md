@@ -14,29 +14,61 @@
 
 ## 安装说明
 
-### Claude Code
+### 通过SKILL市场安装
+
+1. 先安装 clawhub 技能管理器：
+
+```bash
+npx clawhub@latest install amemo-skill
+```
+
+1. 通过 find-skills 安装 amemo-skill：
+
+```bash
+find-skills install amemo-skill
+```
+
+### 手动安装GIT安装
+
+#### Claude Code
 
 ```bash
 git clone https://github.com/lockfeel/amemo-skill.git ~/.claude/skills/amemo-skill
+rm -rf ~/.claude/skills/amemo-skill/.git
+rm -rf ~/.claude/skills/amemo-skill/.claude
 ```
 
 ### Codex
 
 ```bash
 git clone https://github.com/lockfeel/amemo-skill.git ~/.codex/skills/amemo-skill
+rm -rf ~/.codex/skills/amemo-skill/.git
+rm -rf ~/.codex/skills/amemo-skill/.claude
 ```
 
 ### OpenCode
 
 ```bash
 git clone https://github.com/lockfeel/amemo-skill.git ~/.opencode/skills/amemo-skill
+rm -rf ~/.opencode/skills/amemo-skill/.git
+rm -rf ~/.opencode/skills/amemo-skill/.claude
 ```
 
 ### OpenClaw
 
 ```bash
 git clone https://github.com/lockfeel/amemo-skill.git ~/.openclaw/skills/amemo-skill
+rm -rf ~/.openclaw/skills/amemo-skill/.git
+rm -rf ~/.openclaw/skills/amemo-skill/.claude
 ```
+
+### 其他Claw
+
+```code
+请帮我从这个仓库：https://github.com/lockfeel/amemo-skill.git 下载，安装这个SKILL
+```
+
+复制以上仓库路径，直接发送给AI对话中，
 
 安装后重启 AI 工具即可生效。
 
