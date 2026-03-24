@@ -38,28 +38,28 @@ find-skills install amemo-skill
 
 ```bash
 git clone https://github.com/lockfeel/amemo-skill.git ~/.claude/skills/amemo-skill
-rm -rf ~/.claude/skills/amemo-skill/.git ~/.claude/skills/amemo-skill/.claude
+rm -rf ~/.claude/skills/amemo-skill/.git
 ```
 
 #### Codex
 
 ```bash
 git clone https://github.com/lockfeel/amemo-skill.git ~/.codex/skills/amemo-skill
-rm -rf ~/.codex/skills/amemo-skill/.git ~/.codex/skills/amemo-skill/.claude
+rm -rf ~/.codex/skills/amemo-skill/.git
 ```
 
 #### OpenCode
 
 ```bash
 git clone https://github.com/lockfeel/amemo-skill.git ~/.opencode/skills/amemo-skill
-rm -rf ~/.opencode/skills/amemo-skill/.git ~/.opencode/skills/amemo-skill/.claude
+rm -rf ~/.opencode/skills/amemo-skill/.git
 ```
 
 #### OpenClaw
 
 ```bash
 git clone https://github.com/lockfeel/amemo-skill.git ~/.openclaw/skills/amemo-skill
-rm -rf ~/.openclaw/skills/amemo-skill/.git ~/.openclaw/skills/amemo-skill/.claude
+rm -rf ~/.openclaw/skills/amemo-skill/.git
 ```
 
 ### 其他 Claw 工具
