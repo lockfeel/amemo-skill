@@ -261,3 +261,39 @@ curl -X POST https://skill.amemo.cn/find-task \
 1. 检查 `userToken`
 2. 调用：`POST /find-task` with `userToken: "{token}"`
 3. 格式化输出给用户
+
+## 执行流程（由主模块调度）
+
+### 执行步骤
+
+```
+1. 识别触发词（查看/查询/列出 + 清单/任务/待办）
+    ↓
+2. 检查 userToken 是否存在
+    ├── 无 token → 引导登录流程
+    ↓
+3. 调用 POST /find-task 接口
+    ↓
+4. 解析返回数据
+    ├── todayList: 今日列表
+    ├── tomorrowList: 明日列表
+    ├── recentList: 近期列表（15天内）
+    ├── futureList: 未来列表
+    ├── finishList: 已完成列表
+    └── myFollow: 我的收藏
+    ↓
+5. 按分类组织并格式化输出（详见上方"待办清单展示模板"）
+```
+
+### 回复模板
+
+**无数据时：**
+```
+暂无待办清单。
+
+你可以：
+• 创建新的待办任务
+• 使用「保存任务」添加待办
+```
+
+**详细展示模板见上方"待办清单展示模板"章节。**
