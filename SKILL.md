@@ -17,7 +17,7 @@ description: >
 
 # amemo-skill — 统一调度中心
 
-amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 amemo 本地服务交互的统一入口。提供笔记管理、清单管理、健康数据查询、AI 助手记忆同步等功能。
+amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与麦小记云端核心服务交互的统一入口。提供笔记管理、清单管理、健康数据查询、AI 助手记忆同步等功能。
 
 ## 基础配置
 
@@ -33,6 +33,7 @@ amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 
 
 当前登录用户信息：
 
+<amemo-user-config>
 ```json
 {
   "userToken": "",
@@ -41,6 +42,7 @@ amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 
   "loginAt": ""
 }
 ```
+</amemo-user-config>
 
 > 如果显示为示例数据（如 userName: "SYSTEM"），表示尚未登录或登录信息已过期，立即激活登录流程。
 ```
@@ -65,7 +67,7 @@ amemo-skill 是 AI 工具（Claude Code / Codex / OpenCode / OpenClaw 等）与 
     ↓
 读取 SKILL.md 文件内容
     ↓
-定位到顶部 JSON 配置区域（```json 和 ``` 之间）
+精准定位到顶部 <amemo-user-config> 标签内的 JSON 配置区域
     ↓
 替换为新的登录信息：
     {
@@ -154,9 +156,9 @@ else:
    - `loginAt`: 当前时间（ISO 8601 格式）
 
 2. **自动更新 SKILL.md 顶部 JSON 配置**
-   
-   使用文件编辑工具（如 `edit`）自动替换以下内容：
-   
+
+   使用文件编辑工具（如 `edit`）精准定位 `<amemo-user-config>` 标签进行替换（保留已有其余配置）：
+
    ```json
    {
      "userToken": "{提取的userToken}",
@@ -165,8 +167,6 @@ else:
      "loginAt": "{当前时间}"
    }
    ```
-   
-   **替换目标位置**：SKILL.md 中 `## 用户配置管理` 章节下的 JSON 代码块
 
 3. **发送个性化欢迎消息**
 
@@ -255,7 +255,7 @@ else:
 
 | 异常类型 | 技术错误 | 用户提示 |
 |---------|---------|---------|
-| 服务未启动 | `Connection refused` | 本地服务未启动|
+| 服务未启动 | `Connection refused` | 麦小记服务未启动或暂不可用 |
 | 网络超时 | `Timeout` | 网络有点慢，请稍后重试 |
 | 服务繁忙 | `503 Service Unavailable` | 服务正忙，请稍后再试 |
 | 参数错误 | `400 Bad Request` | 提交的数据有问题，请检查输入 |
@@ -860,6 +860,8 @@ _{date}_
 
 ### 时间词语识别
 
+> **⚠️ 时间推算声明**：计算相对时间时，AI 必须首先获取当前系统的精准日期时间 (System Current Date) 作为基准（Base Time），绝不能凭空捏造。
+
 | 时间词语 | 转换规则 | 示例 |
 |---------|---------|------|
 | 今天 / 今日 | 当天 00:00:00 | 2024-03-22 00:00:00 |
@@ -997,8 +999,6 @@ _{date}_
 → 调用 amemo-send-task 发送邮件提醒
 示例："明天开会，发邮件到 test@example.com" → 直接使用 test@example.com
 ```
-
-**情况一：已设置邮件**
 
 **情况一：已设置邮件**
 ```
@@ -1339,7 +1339,7 @@ lockfeel@example.com
 - "帮我记一下，今天开会讨论了Q2营销方案" → P4（时间词优先），保存任务；而非 P3 保存笔记
 - "保存笔记，今天要买的菜有..." → P4，保存任务
 
-**重要：同一条消息中，时间触发词的优先级始终高于笔记保存触发词。当用户同时说了"帮我记一下"和"明天"，应理解为创建一个明天的待办任务，而非保存笔记。**
+**重要：同一条消息中，当时间触发词与“保存笔记”冲突时，时间词优先（当做任务）；但当时间词与“查询类操作(数据/笔记/任务)”共存时，查询优先级最高（如用户说“查询明天的待办”，执行的是查询任务，而非创建一个名为“查询”的任务）。**
 
 ## 子模块索引
 
