@@ -1,27 +1,34 @@
 ---
 name: amemo-find-memo
-description: >
-  amemo 查询备忘录模块。当用户需要查看、搜索已有备忘录时使用。
+description: amemo 查询备忘录模块，查看/搜索已有笔记。
 ---
 
 # amemo-find-memo — 查询备忘录
 
+---
+
 ## 接口信息
 
-- **路由**: POST https://skill.amemo.cn/find-memo
-- **Bean**: MemoBean
-- **Content-Type**: application/json
+| 属性 | 值 |
+|:-----|:---|
+| **路由** | `POST https://skill.amemo.cn/find-memo` |
+| **Bean** | `MemoBean` |
+| **Content-Type** | `application/json` |
+
+---
 
 ## 请求参数
 
-> **注意**：服务端要求所有字段必须存在。`userToken` 和 `memoTitle` 必填且有值，其他字段可选但字段必须存在（可传 `null`）。
+> ⚠️ 服务端要求所有字段必须存在。`userToken` 和 `memoTitle` 必填且有值，其他字段可选但字段必须存在。
 
 | 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| userToken | str | **是** | 用户登录凭证 |
-| memoId | str | 否 | 按 ID 精确查询，不传则传 `null` |
-| memoTitle | str | **是** | 按标题模糊查询（不能为空） |
-| memoContent | str | 否 | 按内容模糊查询，不传则传 `null` |
+|:-----|:----:|:----:|:-----|
+| `userToken` | str | ✅ | 用户登录凭证 |
+| `memoId` | str | — | 按 ID 精确查询，不传则传 `null` |
+| `memoTitle` | str | ✅ | 按标题模糊查询（不能为空） |
+| `memoContent` | str | — | 按内容模糊查询，不传则传 `null` |
+
+---
 
 ## 请求示例
 
@@ -31,6 +38,8 @@ curl -X POST https://skill.amemo.cn/find-memo \
   -H "Content-Type: application/json" \
   -d '{"userToken": "<token>", "memoId": null, "memoTitle": "量化", "memoContent": null}'
 ```
+
+---
 
 ## 响应示例
 
@@ -44,13 +53,17 @@ curl -X POST https://skill.amemo.cn/find-memo \
 }
 ```
 
+---
+
 ## 响应解析
 
 | 字段 | 类型 | 说明 |
-|------|------|------|
-| code | int | 状态码，200 表示成功 |
-| desc | str | 状态描述 |
-| data.text | str | Markdown 格式的笔记列表，包含时间和内容 |
+|:-----|:----:|:-----|
+| `code` | int | 状态码，200 表示成功 |
+| `desc` | str | 状态描述 |
+| `data.text` | str | Markdown 格式的笔记列表，包含时间和内容 |
+
+---
 
 ## 数据格式说明
 
@@ -67,28 +80,37 @@ curl -X POST https://skill.amemo.cn/find-memo \
 笔记内容...
 ```
 
-每条笔记包含：
-- 时间戳（列表项格式）
-- 笔记内容（段落格式，支持多行）
+> 每条笔记包含：
+> - 时间戳（列表项格式）
+> - 笔记内容（段落格式，支持多行）
+
+---
 
 ## 注意事项
 
-- 只需传入 `userToken` 和 `memoTitle` 即可查询
-- 返回的笔记按时间倒序排列
-- 内容已格式化为 Markdown，可直接展示给用户
+> 📌 **最小参数**：只需传入 `userToken` 和 `memoTitle` 即可查询
+>
+> 📋 **排序规则**：返回的笔记按时间倒序排列
+>
+> ✨ **格式说明**：内容已格式化为 Markdown，可直接展示给用户
+
+---
 
 ## 执行流程（由主模块调度）
 
 ### 关键词提取规则
 
-1. 去除通用词：查看、查找、搜索、我的、笔记、备忘、记录、相关的
-2. 保留核心主题词
+1. **去除通用词**：查看、查找、搜索、我的、笔记、备忘、记录、相关的
+2. **保留核心主题词**
 
-**提取示例：**
-- "查看我旅行攻略相关的笔记" → "旅行攻略"
-- "查找关于健身计划的笔记" → "健身计划"
-- "搜索我收藏的菜谱笔记" → "菜谱"
-- "找一下读书笔记" → "读书"
+| 用户输入 | 提取关键词 |
+|:---------|:----------|
+| `"查看我旅行攻略相关的笔记"` | `"旅行攻略"` |
+| `"查找关于健身计划的笔记"` | `"健身计划"` |
+| `"搜索我收藏的菜谱笔记"` | `"菜谱"` |
+| `"找一下读书笔记"` | `"读书"` |
+
+---
 
 ### 执行步骤
 
@@ -105,34 +127,46 @@ curl -X POST https://skill.amemo.cn/find-memo \
 5. 格式化输出 Markdown
 ```
 
-### Markdown 输出格式
+---
 
-**单个结果时：**
-```
-## 📝 {memoTitle}
+## Markdown 输出格式
+
+### 单个结果时
+
+```markdown
+**📝 {memoTitle}**
+
+> 🕐 {createdAt}
 
 {memoContent}
 ```
 
-**多个结果时：**
-```
-## 📚 找到 {count} 条相关笔记
+### 多个结果时
+
+```markdown
+**📚 找到 {count} 条相关笔记**
 
 ---
 
-### {index}. {memoTitle}
-_{createdAt}_
+**1. {memoTitle}**
+> 🕐 {createdAt}
 
 {memoContent}
 
 ---
+
+**2. {memoTitle}**
+> 🕐 {createdAt}
+
+{memoContent}
 ```
 
-**无结果时：**
-```
-未找到与「{关键词}」相关的笔记。
+### 无结果时
 
-你可以：
-• 尝试其他关键词
-• 保存一条新的笔记
+```markdown
+> 🔍 未找到「{关键词}」相关笔记
+>
+> 试试：
+> • 更换关键词
+> • 保存一条新笔记
 ```

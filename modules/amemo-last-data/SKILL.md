@@ -1,7 +1,6 @@
 ---
 name: amemo-last-data
-description: >
-  amemo 查询最新数据模块。当用户需要获取 amemo 中最新的数据记录时使用。
+description: amemo 查询最新数据模块，获取最新的数据记录。
 ---
 
 # amemo-last-data — 查询最新数据
