@@ -23,13 +23,13 @@
 - 先安装 clawhub 技能管理器：
 
 ```bash
-npx clawhub@latest install amemo-skill
+npx clawhub@latest install amemo-skill --force
 ```
 
 - 通过 find-skills 安装：
 
 ```bash
-find-skills install amemo-skill
+npx skills add lockfeel/amemo-skill --list
 ```
 
 ### 通过 Git 手动安装
@@ -114,9 +114,9 @@ rm -rf ~/.openclaw/skills/amemo-skill/.git
 | `amemo-find-memo` | 查询笔记 |
 | `amemo-save-task` | 创建任务 |
 | `amemo-find-task` | 查询任务 |
-| `amemo-send-task` | 任务提醒（邮件提醒） |
-| `amemo-find-data` | 查询健康数据 |
+| `amemo-send-task` | 邮件提醒 |
 | `amemo-last-data` | 健康简报 |
+| `amemo-find-data` | 查询健康数据 |
 | `amemo-init-mate` | 刷新 AI 记忆 |
 | `amemo-save-mate` | 保存 AI 记忆 |
 

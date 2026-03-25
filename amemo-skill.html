@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>amemo-skill使用指南</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@300;400;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #EDEDED;
+      --white: #FFFFFF;
+      --surface: #FFFFFF;
+      --border: #E0E0E0;
+      --border-light: #D5D5D5;
+      --text: #2C2C2C;
+      --text-2: #666666;
+      --text-3: #999999;
+      --accent: #A0BE64;
+      --accent-dark: #8BA84E;
+      --accent-dim: rgba(160, 190, 100, 0.12);
+      --accent-soft: rgba(160, 190, 100, 0.08);
+      --tag-note: #6B9BD2;
+      --tag-note-bg: rgba(107, 155, 210, 0.10);
+      --tag-task: #D4956B;
+      --tag-task-bg: rgba(212, 149, 107, 0.10);
+      --tag-health: #D46B8A;
+      --tag-health-bg: rgba(212, 107, 138, 0.10);
+      --tag-mate: #9B7BD4;
+      --tag-mate-bg: rgba(155, 123, 212, 0.10);
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'LXGW WenKai', -apple-system, 'PingFang SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* nav bar */
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 460px;
+      z-index: 100;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      background: linear-gradient(to bottom, var(--bg) 50%, transparent);
+    }
+
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border-light);
+      transition: all 0.3s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .nav-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+      transform: scale(1.3);
+    }
+
+    /* sections */
+    .section {
+      padding-top: 56px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    .section:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .section:nth-child(2) {
+      animation-delay: 0.04s;
+    }
+
+    .section:nth-child(3) {
+      animation-delay: 0.08s;
+    }
+
+    .section:nth-child(4) {
+      animation-delay: 0.12s;
+    }
+
+    .section:nth-child(5) {
+      animation-delay: 0.16s;
+    }
+
+    .section:nth-child(6) {
+      animation-delay: 0.20s;
+    }
+
+    .section:nth-child(7) {
+      animation-delay: 0.24s;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* hero */
+    .hero {
+      text-align: center;
+      padding-top: 72px;
+      padding-bottom: 8px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 3px 12px;
+      background: var(--accent-dim);
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: var(--accent-dark);
+      letter-spacing: 0.05em;
+      margin-bottom: 18px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    .hero h1 .dot {
+      color: var(--accent);
+    }
+
+    .hero .tagline {
+      font-size: 0.84rem;
+      color: var(--text-2);
+      font-weight: 300;
+      margin-top: 14px;
+      line-height: 1.9;
+    }
+
+    .hero .tagline span {
+      color: var(--accent-dark);
+      font-weight: 400;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    /* section title */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .section-label .icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--accent-dim);
+      color: var(--accent-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .section-label h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    /* feature cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+
+    .feature-card:active {
+      transform: scale(0.97);
+    }
+
+    .feature-card .fc-icon {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .feature-card .fc-title {
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .feature-card .fc-desc {
+      font-size: 0.72rem;
+      color: var(--text-3);
+      line-height: 1.6;
+    }
+
+    /* code block with copy */
+    .code-block {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 10px;
+      transition: box-shadow 0.2s;
+    }
+
+    .code-block:hover {
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .code-block .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 0;
+      font-size: 0.66rem;
+      color: var(--text-3);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.03em;
+    }
+
+    .code-block pre {
+      padding: 10px 14px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      line-height: 1.7;
+      color: var(--text-2);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .copy-btn:active {
+      transform: scale(0.88);
+    }
+
+    .copy-btn.copied {
+      border-color: var(--accent);
+      color: #fff;
+      background: var(--accent);
+    }
+
+    /* tool tabs */
+    .tool-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tool-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tool-tab {
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-2);
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tool-tab.active {
+      border-color: var(--accent);
+      color: var(--accent-dark);
+      background: var(--accent-dim);
+      font-weight: 500;
+    }
+
+    .tool-tab:active {
+      transform: scale(0.95);
+    }
+
+    .tool-content {
+      display: none;
+    }
+
+    .tool-content.active {
+      display: block;
+    }
+
+    /* steps */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      color: var(--accent-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .step-text {
+      font-size: 0.84rem;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+
+    .step-text strong {
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    /* command table */
+    .cmd-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .cmd-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+    }
+
+    .cmd-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.66rem;
+      color: var(--text-3);
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.06em;
+    }
+
+    .cmd-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-2);
+    }
+
+    .cmd-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .cmd-table .cmd-name {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-dark);
+      font-size: 0.7rem;
+    }
+
+    /* activation card */
+    .activate-section {
+      margin-bottom: 20px;
+    }
+
+    .activate-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .activate-header .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .activate-header .label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .activate-header .sublabel {
+      font-size: 0.72rem;
+      font-style: italic;
+      color: var(--text-3);
+      font-weight: 400;
+      margin-left: 16px;
+    }
+
+    .activate-header .count {
+      font-size: 0.62rem;
+      color: var(--text-3);
+      margin-left: auto;
+      background: var(--tag-mate-bg);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .cmd-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .cmd-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .cmd-chip:active {
+      transform: scale(0.95);
+    }
+
+    .cmd-chip .chip-copy {
+      font-size: 0.58rem;
+      color: var(--text-3);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .cmd-chip:hover .chip-copy {
+      opacity: 1;
+    }
+
+    .cmd-chip.copied {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--accent-dark);
+    }
+
+    .cmd-chip.copied .chip-copy {
+      opacity: 1;
+      color: var(--accent-dark);
+    }
+
+    .example-line {
+      font-size: 0.72rem;
+      color: var(--text-3);
+      padding: 6px 12px;
+      background: var(--accent-soft);
+      border-radius: 6px;
+      margin-top: 2px;
+    }
+
+    .example-line::before {
+      content: '例 ';
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    /* note cards */
+    .note-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      font-size: 0.78rem;
+      color: var(--text-2);
+      line-height: 1.7;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .note-card .note-icon {
+      flex-shrink: 0;
+      margin-top: 3px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border-light);
+    }
+
+    /* toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--text);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 24px;
+      font-size: 0.78rem;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* footer */
+    .footer {
+      text-align: center;
+      padding: 36px 0 20px;
+      font-size: 0.7rem;
+      color: var(--text-3);
+    }
+
+    .footer a {
+      color: var(--accent-dark);
+      text-decoration: none;
+    }
+
+    /* subtitle */
+    .sub-title {
+      font-size: 0.78rem;
+      color: var(--text-2);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .hint-text {
+      font-size: 0.72rem;
+      color: var(--text-3);
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 380px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="nav-bar" id="navBar">
+    <button class="nav-dot active" data-section="hero" aria-label="顶部"></button>
+    <button class="nav-dot" data-section="features" aria-label="功能特性"></button>
+    <button class="nav-dot" data-section="install" aria-label="安装"></button>
+    <button class="nav-dot" data-section="start" aria-label="快速开始"></button>
+    <button class="nav-dot" data-section="modules" aria-label="调度模块"></button>
+    <button class="nav-dot" data-section="commands" aria-label="激活口令"></button>
+    <button class="nav-dot" data-section="notes" aria-label="注意事项"></button>
+  </nav>
+
+  <div class="container">
+
+    <!-- Hero -->
+    <div class="section" id="hero">
+      <div class="hero">
+        <div class="hero-badge">SKILL v1.0</div>
+        <h1>amemo<span class="dot">.</span>skill</h1>
+        <p class="tagline">
+          专为 AI 工具链接 <span>麦小记 APP</span> 而开发的技能包<br>
+          支持 OpenClaw / Claude Code / Codex / OpenCode
+        </p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Features -->
+    <div class="section" id="features">
+      <div class="section-label">
+        <div class="icon">&#9733;</div>
+        <h2>功能特性</h2>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon">&#128221;</div>
+          <div class="fc-title">笔记管理</div>
+          <div class="fc-desc">保存和查询笔记<br>自动整理对话内容</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">&#9745;</div>
+          <div class="fc-title">清单管理</div>
+          <div class="fc-desc">创建待办任务<br>支持邮件提醒</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">&#9829;</div>
+          <div class="fc-title">健康数据</div>
+          <div class="fc-desc">步数 / 睡眠 / 血氧<br>血压 / 心率 / 消耗</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">&#9889;</div>
+          <div class="fc-title">健康简报</div>
+          <div class="fc-desc">一键生成<br>今日健康数据汇总</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Install -->
+    <div class="section" id="install">
+      <div class="section-label">
+        <div class="icon">&#10133;</div>
+        <h2>安装方式</h2>
+      </div>
+
+      <p class="sub-title" style="margin-top: 20px;">Claw软件快速安装</p>
+      <p class="hint-text">复制下面内容，直接发送给 AI 对话框：</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)" aria-label="复制"><svg width="13" height="13"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg></button>
+        <pre>请帮我从这个仓库：https://github.com/lockfeel/amemo-skill.git 下载安装这个 Skill</pre>
+      </div>
+
+      <p class="sub-title">通过 Skill 市场安装</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)" aria-label="复制"><svg width="13" height="13"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg></button>
+        <div class="code-header">clawhub</div>
+        <pre>npx clawhub@latest install amemo-skill --force</pre>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)" aria-label="复制"><svg width="13" height="13"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg></button>
+        <div class="code-header">find-skills</div>
+        <pre>npx skills add lockfeel/amemo-skill --list</pre>
+      </div>
+
+      <p class="sub-title" style="margin-top: 20px;">通过 Git 手动安装</p>
+
+      <div class="tool-tabs" id="toolTabs">
+        <button class="tool-tab active" data-tool="claude">Claude Code</button>
+        <button class="tool-tab" data-tool="codex">Codex</button>
+        <button class="tool-tab" data-tool="opencode">OpenCode</button>
+        <button class="tool-tab" data-tool="openclaw">OpenClaw</button>
+      </div>
+
+      <div class="tool-content active" id="tool-claude">
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)" aria-label="复制"><svg width="13" height="13"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg></button>
+          <div class="code-header">bash</div>
+          <pre>git clone https://github.com/lockfeel/amemo-skill.git ~/.claude/skills/amemo-skill
+rm -rf ~/.claude/skills/amemo-skill/.git</pre>
+        </div>
+      </div>
+      <div class="tool-content" id="tool-codex">
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)" aria-label="复制"><svg width="13" height="13"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg></button>
+          <div class="code-header">bash</div>
+          <pre>git clone https://github.com/lockfeel/amemo-skill.git ~/.codex/skills/amemo-skill
+rm -rf ~/.codex/skills/amemo-skill/.git</pre>
+        </div>
+      </div>
+      <div class="tool-content" id="tool-opencode">
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)" aria-label="复制"><svg width="13" height="13"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg></button>
+          <div class="code-header">bash</div>
+          <pre>git clone https://github.com/lockfeel/amemo-skill.git ~/.opencode/skills/amemo-skill
+rm -rf ~/.opencode/skills/amemo-skill/.git</pre>
+        </div>
+      </div>
+      <div class="tool-content" id="tool-openclaw">
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)" aria-label="复制"><svg width="13" height="13"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg></button>
+          <div class="code-header">bash</div>
+          <pre>git clone https://github.com/lockfeel/amemo-skill.git ~/.openclaw/skills/amemo-skill
+rm -rf ~/.openclaw/skills/amemo-skill/.git</pre>
+        </div>
+      </div>
+      <p class="hint-text" style="margin-top: 10px;">安装后重启 AI 工具即可生效</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Quick Start -->
+    <div class="section" id="start">
+      <div class="section-label">
+        <div class="icon">&#9889;</div>
+        <h2>快速开始</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            在 AI 工具对话框中输入以下内容激活：<br>
+            <strong>麦小记登录</strong>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            首次使用需要登录，发送手机号完成验证：<br>
+            <strong>发送你的手机号：13800138000</strong>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">系统自动发送验证码，输入验证码完成登录</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Modules -->
+    <div class="section" id="modules">
+      <div class="section-label">
+        <div class="icon">&#9881;</div>
+        <h2>调度模块</h2>
+      </div>
+      <div class="cmd-table-wrap">
+        <table class="cmd-table">
+          <thead>
+            <tr>
+              <th>模块</th>
+              <th>功能</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cmd-name">amemo-login</td>
+              <td>用户登录</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-send-code</td>
+              <td>发送验证码</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-save-memo</td>
+              <td>保存笔记</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-find-memo</td>
+              <td>查询笔记</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-save-task</td>
+              <td>创建任务</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-find-task</td>
+              <td>查询任务</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-send-task</td>
+              <td>任务提醒（邮件提醒）</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-find-data</td>
+              <td>查询健康数据</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-last-data</td>
+              <td>健康简报</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-init-mate</td>
+              <td>刷新 AI 记忆</td>
+            </tr>
+            <tr>
+              <td class="cmd-name">amemo-save-mate</td>
+              <td>保存 AI 记忆</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Activation Commands -->
+    <div class="section" id="commands">
+      <div class="section-label">
+        <div class="icon">&#9998;</div>
+        <h2>激活口令</h2>
+      </div>
+
+      <!-- 笔记 -->
+      <div class="activate-section">
+        <div class="activate-header">
+          <div class="dot" style="background: var(--tag-note);"></div>
+          <span class="label">笔记</span>
+        </div>
+        <div class="activate-header">
+          <span class="sublabel">*保存*</span>
+        </div>
+        <div class="cmd-list">
+          <div class="cmd-chip" onclick="copyChip(this)">保存笔记<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">记下这一条<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">记录笔记<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">帮我记一下<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">保存备忘<span class="chip-copy">&#128203;</span></div>
+        </div>
+        <div class="example-line">帮我记一下，楼下超市周末有满50减10的优惠活动</div>
+
+        <div class="activate-header" style="margin-top: 14px;">
+          <span class="sublabel">*查看*</span>
+        </div>
+        <div class="cmd-list">
+          <div class="cmd-chip" onclick="copyChip(this)">查看我 XXX 相关的笔记<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">查找 XXX 相关的笔记<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">搜索我 XXX 相关的笔记<span class="chip-copy">&#128203;</span></div>
+        </div>
+        <div class="example-line">查看我旅行相关的笔记</div>
+      </div>
+
+      <!-- 任务 -->
+      <div class="activate-section">
+        <div class="activate-header">
+          <div class="dot" style="background: var(--tag-task);"></div>
+          <span class="label">任务</span>
+        </div>
+        <div class="activate-header">
+          <span class="sublabel">*保存*</span>
+        </div>
+        <div class="cmd-list">
+          <div class="cmd-chip" onclick="copyChip(this)">今天 XXX<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">明天 XXX<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">后天 XXX<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">将来 XXX<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">最近 XXX<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">12月XX日 XXX<span class="chip-copy">&#128203;</span></div>
+        </div>
+        <div class="example-line">明天下午3点带孩子去上钢琴课</div>
+
+        <div class="activate-header" style="margin-top: 14px;">
+          <span class="sublabel">*查看*</span>
+        </div>
+        <div class="cmd-list">
+          <div class="cmd-chip" onclick="copyChip(this)">查看我的清单<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">查询清单<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">我的待办<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">查看任务<span class="chip-copy">&#128203;</span></div>
+        </div>
+        <div class="example-line">查看我的待办</div>
+      </div>
+
+      <!-- 健康数据 -->
+      <div class="activate-section">
+        <div class="activate-header">
+          <div class="dot" style="background: var(--tag-health);"></div>
+          <span class="label">健康数据</span>
+        </div>
+        <div class="cmd-list">
+          <div class="cmd-chip" onclick="copyChip(this)">查看我的步数数据<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">查看我的睡眠数据<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">查看我的血氧数据<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">查看我的血压数据<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">查看我的心率数据<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">查看我的消耗数据<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">今日健康简报<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">健康日报<span class="chip-copy">&#128203;</span></div>
+        </div>
+        <div class="example-line">查看我的步数数据 / 今日健康简报</div>
+      </div>
+
+      <!-- AI 记忆 -->
+      <div class="activate-section">
+        <div class="activate-header">
+          <div class="dot" style="background: var(--tag-mate);"></div>
+          <span class="label">AI 记忆</span>
+          <span class="count">仅限 OpenClaw</span>
+        </div>
+        <div class="cmd-list">
+          <div class="cmd-chip" onclick="copyChip(this)">刷新助手记忆<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">保存永久记忆<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">永久记住 XXX<span class="chip-copy">&#128203;</span></div>
+          <div class="cmd-chip" onclick="copyChip(this)">记住这个<span class="chip-copy">&#128203;</span></div>
+        </div>
+        <div class="example-line">记住这个，我对花生过敏</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Notes -->
+    <div class="section" id="notes">
+      <div class="section-label">
+        <div class="icon">&#9888;</div>
+        <h2>注意事项</h2>
+      </div>
+      <div class="note-card">
+        <div class="note-icon" style="background: var(--tag-note);"></div>
+        <span>AI 记忆模块（<code
+            style="color:var(--accent-dark);font-family:'JetBrains Mono',monospace;font-size:0.7rem;">amemo-init-mate</code>、<code
+            style="color:var(--accent-dark);font-family:'JetBrains Mono',monospace;font-size:0.7rem;">amemo-save-mate</code>）仅适用于
+          OpenClaw 或基于 OpenClaw 开发的应用</span>
+      </div>
+      <div class="note-card">
+        <div class="note-icon" style="background: var(--tag-task);"></div>
+        <span>邮件提醒需要在创建任务时提供有效的邮箱地址</span>
+      </div>
+      <div class="note-card">
+        <div class="note-icon" style="background: var(--tag-health);"></div>
+        <span>以上功能全部由 AI 工具根据实际业务场景自主调用，偶尔会存在行为异常情况，请自行判断</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>amemo-skill</p>
+      <p style="margin-top: 4px;">
+        <a href="https://github.com/lockfeel/amemo-skill" target="_blank" rel="noopener">北京记下文化有限公司</a>
+      </p>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast">已复制到剪贴板</div>
+
+  <script>
+    function copyCode(btn) {
+      const pre = btn.closest('.code-block').querySelector('pre');
+      navigator.clipboard.writeText(pre.textContent).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        showToast();
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        }, 2000);
+      });
+    }
+
+    function copyChip(chip) {
+      const text = chip.childNodes[0].textContent.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        chip.classList.add('copied');
+        chip.querySelector('.chip-copy').textContent = '✓';
+        showToast();
+        setTimeout(() => {
+          chip.classList.remove('copied');
+          chip.querySelector('.chip-copy').textContent = '\u{1F4CB}';
+        }, 2000);
+      });
+    }
+
+    let toastTimer;
+    function showToast() {
+      const toast = document.getElementById('toast');
+      clearTimeout(toastTimer);
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+
+    document.getElementById('toolTabs').addEventListener('click', (e) => {
+      const tab = e.target.closest('.tool-tab');
+      if (!tab) return;
+      document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tool-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tool-' + tab.dataset.tool).classList.add('active');
+    });
+
+    const sections = ['hero', 'features', 'install', 'start', 'modules', 'commands', 'notes'];
+    const dots = document.querySelectorAll('.nav-dot');
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const el = document.getElementById(dot.dataset.section);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          dots.forEach(d => d.classList.toggle('active', d.dataset.section === id));
+        }
+      });
+    }, { threshold: 0.3, rootMargin: '-60px 0px 0px 0px' });
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  </script>
+</body>
+
+</html>
