@@ -189,46 +189,22 @@ BEGIN HandleInterrupt(newIntent)
   END IF
 END
 
-对话状态机生命周期 — 以下状态在当前对话期间有效：
-BEGIN ManageSessionState()
-  /** 登录流程上下文状态 */
-  ON "麦小记登录/注册" 触发:
-    SET context = "等待输入手机号"
-  ON amemo-send-code success:
-    SET context = "等待输入验证码"
-  ON amemo-login success:
-    CLEAR context
-  ON "取消登录":
-    CLEAR context
+对话状态速查表 — context 字段用于意图路由分支判断：
 
-  /** 笔记上下文状态 */
-  ON amemo-save-memo success:
-    SET lastMemoId, lastMemoTitle
-    CLEAR when: 话题切换 OR 10轮未使用 OR 用户说"新笔记"
-  ON save-memo 进入新建/更新确认:
-    SET context = "等待笔记操作确认"
-  ON 用户确认笔记操作 (新建/更新) 完成:
-    CLEAR context
-  
-  /** 任务上下文状态 */
-  ON amemo-save-task success:
-    SET lastTaskId
-    CLEAR when: 话题切换 OR 10轮未使用
-  
-  /** 邮件配置上下文状态 */
-  ON save-task 进入邮箱询问流程:
-    SET context = "等待输入邮箱"
-  ON userEmail 写入 <amemo-user-config> 成功:
-    CLEAR context
-  ON 用户回复"跳过" (邮件配置):
-    CLEAR context
+| context 值 | 触发条件 | 退出条件 | 期间行为 |
+|---|---|---|---|
+| `等待输入手机号` | 触发自动登录引导 | 收到11位手机号→send-code | 仅接受数字 |
+| `等待输入验证码` | send-code 成功 | 收到4-6位数字→login | 允许并行执行有token的操作 |
+| `等待笔记操作确认` | 保存笔记确认后 | 用户选择新建/更新/取消 | 允许并行执行其他操作 |
+| `等待输入邮箱` | 任务邮件配置触发 | 收到有效邮箱/跳过 | 允许并行执行其他操作 |
+| (空) | 话题切换时 | — | 正常路由 |
 
-  /** 话题切换时清除所有临时 context */
-  ON 检测到话题切换:
-    IF context IS NOT empty THEN CLEAR context
-END
+> lastMemoId/lastMemoTitle: 保存笔记成功后暂存，话题切换或10轮后清除。
+> lastTaskId: 保存任务成功后暂存，话题切换或10轮后清除。
 
 ## 意图路由
+
+> **前置检查**: 每次路由前先读 `<amemo-user-config>`，若 userToken 为空且非登录相关意图，直接重定向到登录引导。
 
 按优先级顺序判断，命中即执行，不再继续判断：
 BEGIN RouteIntent(userInput)
@@ -358,14 +334,8 @@ END
 
 ## 认证流程
 
-除 `/login` 和 `/send-code` 外，所有请求需携带 `userToken`：
-BEGIN AuthCheck()
-  IF NOT hasToken THEN
-    CALL LoginFlow()
-    RETURN acquired token
-  END IF
-  RETURN existing token
-END
+> 已合并到意图路由的前置检查中。所有需要 userToken 的请求在路由阶段自动校验。
+> 除 `/login` 和 `/send-code` 外，所有请求必须携带 `userToken`，否则重定向到登录引导。
 
 ## 使用方式
 
@@ -384,7 +354,18 @@ BEGIN ExecuteModule(moduleName)
   END IF
 END
 
-## 示例: 用户要"保存一条笔记
-1. READ modules/amemo-save-memo/SKILL.md
-2. 按参数格式构造请求
-3. curl POST https://skill.amemo.cn/save-memo
+## 执行流程决策树
+
+```
+用户输入
+  ├─ 含登录/注册词 → 检查 token → 无: 引导登录 / 有: "已登录"
+  ├─ 手机号 + context=等待手机号 → 发送验证码
+  ├─ 验证码 + context=等待验证码 → 验证登录
+  ├─ 保存笔记触发词 → 提取内容 → 确认 → 调用 save-memo
+  ├─ 时间词 + 提醒词 → 提取任务 → 确认 → 调用 save-task
+  ├─ 查询词 + 笔记/备忘 → 调用 find-memo
+  ├─ 查询词 + 清单/待办 → 调用 find-task
+  ├─ 健康数据词 → 调用 find-data / last-data
+  ├─ AI记忆词 → 调用 init-mate / save-mate
+  └─ 无匹配 → "抱歉，我没理解..."
+```
