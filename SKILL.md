@@ -252,12 +252,22 @@ BEGIN RouteIntent(userInput)
   /** 歧义消解: 时间词+动词→任务(P2); 时间词+场景词→笔记(P1) */
   IF has 触发词(保存笔记, 记下这一条, 记录笔记, 帮我记一下, 保存备忘)
      OR has 场景词(的情景, 的情况, 的时候, 的经历) THEN
-    DISPATCH amemo-save-memo
+    /** 检查点: 保存前向用户确认内容，防止误保存 */
+    PARSE 用户输入 → 提取标题和内容摘要
+    PROMPT "📝 确认保存笔记？\n标题: {标题}\n内容: {摘要}"
+    IF 用户确认 THEN DISPATCH amemo-save-memo
+    ELSE ABORT
+    END IF
   END IF
 
   /** P2: 保存任务 */
   IF has 时间词 AND (has 提醒词(提醒我, 记得, 要, 需要) OR has 动词(开会, 吃饭, 去, 买, 交, 看, 做)) THEN
-    DISPATCH amemo-save-task
+    /** 检查点: 保存任务前向用户确认时间和内容 */
+    PARSE 用户输入 → 提取任务标题、时间、说明
+    PROMPT "✅ 确认保存任务？\n标题: {标题}\n时间: {时间}"
+    IF 用户确认 THEN DISPATCH amemo-save-task
+    ELSE ABORT
+    END IF
   END IF
 
   /** P3: AI 记忆（仅 OpenClaw）*/
@@ -273,7 +283,12 @@ BEGIN RouteIntent(userInput)
    *  查询信号: 查看/查找/搜索/查询/有没有/帮我看看/最近/今天/多少
    *  排除保存信号: 帮我记/保存/提醒我/记下 (这些是保存意图，不应命中P4) */
   IF has 查询词(查看, 查找, 搜索, 查询, 有没有, 帮我看看, 最近) AND CONTAINS 笔记/备忘 THEN
-    DISPATCH amemo-find-memo
+    /** 歧义处理: "帮我看看最近写的笔记" → 查询; "最近写的笔记，帮我保存一下" → 保存 */
+    IF NOT has 保存词(保存, 记下, 记录) THEN
+      DISPATCH amemo-find-memo
+    ELSE
+      DISPATCH amemo-save-memo
+    END IF
   END IF
   IF has 查询词(查看, 查找, 搜索, 查询, 有没有, 帮我看看) AND CONTAINS 清单/待办/任务 THEN
     DISPATCH amemo-find-task
@@ -334,7 +349,9 @@ BEGIN AdaptTools()
   HTTP_REQUEST → 使用 bash 执行 curl 命令
   FILE_EDIT → 直接读写 SKILL.md 中的 <amemo-user-config> 区域
   SCHEDULED_TASK → Claude Code: Scheduled tool; 其他: 内置定时能力或跳过
-  SCRIPT_EXEC → python3 scripts/parse_time.py（需 Python 3.10+）
+  SCRIPT_EXEC → python3 scripts/parse_time.py（文件路径: 项目根目录/scripts/parse_time.py，需 Python 3.10+）
+    用法示例: python3 scripts/parse_time.py "明天下午3点开会"
+    输出: JSON {"intent": "task"|"memo", "pairs": [...], "base_time": "..."}
   
   /** 如果不支持定时任务，仅保存任务到麦小记，邮件提醒仍可用 */
 END
