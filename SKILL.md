@@ -128,12 +128,13 @@ END
 BEGIN HandleError(code, desc, isNetworkError)
   /** 优先级: code=2007 > 网络错误 > 其他错误 */
   IF code == 2007 THEN
+    /** Token过期: 清空当前token, 引导重新登录 */
     CLEAR userToken
     CALL LoginGuide()
-    SEND "⚠️ 登录状态已失效，请重新登录"
+    SEND "登录状态已失效，请重新登录"
     ABORT current flow
   ELSE IF isNetworkError THEN
-    RETRY once
+    RETRY once with 2s delay
     IF still fail THEN SEND "网络有点慢，请稍后重试"
   ELSE IF code != 200 THEN
     SEND desc OR "出了点小问题，请稍后重试"
@@ -361,4 +362,33 @@ END
   ├─ 健康数据词 → 调用 find-data / last-data
   ├─ AI记忆词 → 调用 init-mate / save-mate
   └─ 无匹配 → "抱歉，我没理解..."
+```
+
+## 端到端执行示例
+
+**场景**: 用户发送 "麦小记登录" → 收到手机号 13800138000 → 输入验证码 123456 → "帮我记一下，今天和产品团队开了需求会"
+
+```
+1. 用户: "麦小记登录"
+   → AutoLoginTrigger() → userToken 为空 → FirstTimeGuide()
+   → 发送欢迎消息 → context = "等待输入手机号"
+
+2. 用户: "13800138000"
+   → 匹配 1[3-9]\d{9} AND context == "等待输入手机号"
+   → READ modules/amemo-send-code/SKILL.md → curl POST /send-code {phone: "13800138000"}
+   → code=200 → context = "等待输入验证码"
+
+3. 用户: "123456"
+   → 匹配 \d{4,6} AND context == "等待输入验证码"
+   → READ modules/amemo-login/SKILL.md → curl POST /login {phone, code}
+   → code=200, data.userToken=xxx → UpdateUserConfig() → 写 SKILL.md
+   → 发送 "欢迎回来！" → context = (空)
+
+4. 用户: "帮我记一下，今天和产品团队开了需求会"
+   → RouteIntent → P1 保存笔记触发词命中
+   → PARSE: 标题="产品需求会记录", 摘要="今天和产品团队开了需求会"
+   → 确认: "确认保存笔记？标题: 产品需求会记录"
+   → 用户确认
+   → READ modules/amemo-save-memo/SKILL.md → curl POST /save-memo
+   → code=200 → SET lastMemoId → 发送保存成功消息
 ```
